@@ -1,25 +1,29 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         GameProgress player1 = new GameProgress(15, 2, 3, 3.2);
         GameProgress player2 = new GameProgress(24, 5, 6, 17.5);
         GameProgress playerAdmin = new GameProgress(1337, 1337, 1337, 1337);
 
-        saveGame("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\games\\savegames\\player1.dat", player1);
-        saveGame("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\games\\savegames\\player2.dat", player2);
-        saveGame("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\games\\savegames\\playerAdmin.dat", playerAdmin);
+        saveGame("C:\\Users\\User\\IdeaProjects\\InstallDota2\\games\\savegames\\player1.dat", player1);
+        saveGame("C:\\Users\\User\\IdeaProjects\\InstallDota2\\games\\savegames\\player2.dat", player2);
+        saveGame("C:\\Users\\User\\IdeaProjects\\InstallDota2\\games\\savegames\\playerAdmin.dat", playerAdmin);
 
-        File save1 = new File("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\Games\\savegames\\", "player1.dat");
-        File save2 = new File("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\Games\\savegames\\", "player2.dat");
-        File save3 = new File("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\Games\\savegames\\", "playerAdmin.dat");
-        zipFiles2("C:\\Users\\Елисей\\IdeaProjects\\InstallDota2\\Games\\savegames\\zip.zip", save1, save2, save3);
+        File save1 = new File("C:\\Users\\User\\IdeaProjects\\InstallDota2\\Games\\savegames\\", "player1.dat");
+        File save2 = new File("C:\\Users\\User\\IdeaProjects\\InstallDota2\\Games\\savegames\\", "player2.dat");
+        File save3 = new File("C:\\Users\\User\\IdeaProjects\\InstallDota2\\Games\\savegames\\", "playerAdmin.dat");
 
+        List<File> saveList = new ArrayList<>();
+        saveList.add(save1);
+        saveList.add(save2);
+        saveList.add(save3);
+
+        zipFiles("C:\\Users\\User\\IdeaProjects\\InstallDota2\\Games\\savegames\\zip.zip", saveList);
 
         removeFile(save1);
         removeFile(save2);
@@ -39,48 +43,43 @@ public class Main {
 
     }
 
-    public static void zipFiles2(String pathZip, File file1, File file2, File file3) {
-        try (ZipOutputStream zout = new ZipOutputStream(new
-                FileOutputStream(pathZip));
-             FileInputStream fis1 = new FileInputStream(file1)) {
-            ZipEntry entry = new ZipEntry(file1.getName());
-            zout.putNextEntry(entry);
-            byte[] buffer = new byte[fis1.available()];
-            fis1.read(buffer);
-            zout.write(buffer);
-            zout.closeEntry();
+    public static void zipFiles(String pathZip, List<File> list) {
+        ZipOutputStream zout = null;
+        FileInputStream fis = null;
 
-            try {
-                FileInputStream fis2 = new FileInputStream(file2);
-                entry = new ZipEntry(file2.getName());
+        try{
+            zout = new ZipOutputStream(new FileOutputStream(pathZip));
+            for (File file : list) {
+                fis = new FileInputStream(file);
+                ZipEntry entry = new ZipEntry(file.getName());
                 zout.putNextEntry(entry);
-                buffer = new byte[fis2.available()];
-                fis2.read(buffer);
+                byte[] buffer = new byte[fis.available()];
+                fis.read(buffer);
                 zout.write(buffer);
                 zout.closeEntry();
-            } catch (Exception ex) {
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }finally {
+            try {
+                if (zout != null) {
+                    zout.close();
+                }
+                if (fis != null){
+                    fis.close();
+                }
+            } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
 
-            try {
-                FileInputStream fis3 = new FileInputStream(file3);
-                entry = new ZipEntry(file3.getName());
-                zout.putNextEntry(entry);
-                buffer = new byte[fis3.available()];
-                fis3.read(buffer);
-                zout.write(buffer);
-                zout.closeEntry();
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
         }
     }
 
     public static void removeFile(File file) {
         if (file.delete()) {
             System.out.println(file.getName() + " удален");
+        }else{
+            System.out.println(file.getName() + " не удален");
         }
     }
 }
