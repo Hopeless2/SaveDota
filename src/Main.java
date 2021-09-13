@@ -25,9 +25,9 @@ public class Main {
 
         zipFiles("C:\\Users\\User\\IdeaProjects\\InstallDota2\\Games\\savegames\\zip.zip", saveList);
 
-        removeFile(save1);
-        removeFile(save2);
-        removeFile(save3);
+        for (File file: saveList){
+            removeFile(file);
+        }
 
 
     }
