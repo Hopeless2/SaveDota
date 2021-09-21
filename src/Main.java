@@ -43,44 +43,21 @@ public class Main {
 
     }
 
-    public static void zipFiles(String pathZip, List<File> list) {
-        ZipOutputStream zout = null;
-        FileInputStream fis = null;
-        FileOutputStream fos = null;
-
-        try{
-            zout = new ZipOutputStream(fos = new FileOutputStream(pathZip));
+    public static void zipFiles(String pathZip, List<File> list){
+        try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(pathZip))){
             for (File file : list) {
-                fis = new FileInputStream(file);
+                FileInputStream fis = new FileInputStream(file);
                 ZipEntry entry = new ZipEntry(file.getName());
                 zout.putNextEntry(entry);
                 byte[] buffer = new byte[fis.available()];
                 fis.read(buffer);
                 zout.write(buffer);
                 zout.closeEntry();
-                try {
-                    if (fis != null){
-                        fis.close();
-                    }
-                } catch (IOException ex) {
-                    System.out.println(ex.getMessage());
-                }
+                fis.close();
             }
-        }catch (Exception e){
+        }catch (IOException e){
             System.out.println(e.getMessage());
         }
-
-        try {
-            if (zout != null) {
-                zout.close();
-            }
-            if (fos != null){
-                fos.close();
-            }
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-
     }
 
     public static void removeFile(File file) {
