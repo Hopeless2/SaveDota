@@ -55,7 +55,8 @@ public class Main {
                     fis.read(buffer);
                     zout.write(buffer);
                     zout.closeEntry();
-
+                }catch (IOException e){
+                    System.out.println(e.getMessage());
                 }
 
             }
