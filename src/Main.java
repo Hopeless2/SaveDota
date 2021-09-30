@@ -45,19 +45,25 @@ public class Main {
 
     public static void zipFiles(String pathZip, List<File> list){
         try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(pathZip))){
+
             for (File file : list) {
-                FileInputStream fis = new FileInputStream(file);
-                ZipEntry entry = new ZipEntry(file.getName());
-                zout.putNextEntry(entry);
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);
-                zout.write(buffer);
-                zout.closeEntry();
-                fis.close();
+
+                try(FileInputStream fis = new FileInputStream((file))){
+                    ZipEntry entry = new ZipEntry(file.getName());
+                    zout.putNextEntry(entry);
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);
+                    zout.write(buffer);
+                    zout.closeEntry();
+
+                }
+
             }
+
         }catch (IOException e){
             System.out.println(e.getMessage());
         }
+
     }
 
     public static void removeFile(File file) {
